@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gestor de tareas para estudiantes
 
-## Getting Started
+Aplicación simple de tareas construida con Next.js, Vercel y Supabase Auth/Postgres.
 
-First, run the development server:
+## Requisitos
+
+- Node.js compatible con Next.js 16
+- Cuenta/proyecto en Supabase
+- Variables de entorno configuradas localmente y en Vercel
+
+## Configuración local
+
+Instalá dependencias:
+
+```bash
+npm ci
+```
+
+Copiá el ejemplo de variables y completalo con los valores de Supabase:
+
+```bash
+cp .env.example .env.local
+```
+
+Variables requeridas:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+Ejecutá el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Base de datos Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+La tabla `tasks`, sus índices y las policies de Row Level Security están en:
 
-## Learn More
+```txt
+supabase/migrations/20260618210000_create_tasks.sql
+```
 
-To learn more about Next.js, take a look at the following resources:
+Aplicá ese SQL en Supabase SQL Editor o con Supabase CLI. Las policies permiten que cada usuario autenticado lea, cree, actualice y elimine solo sus propias tareas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy en Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Importá el repositorio en Vercel.
+2. Agregá las mismas variables de `.env.example` en Project Settings > Environment Variables.
+3. Verificá que el proyecto de Supabase tenga aplicado el SQL de `supabase/migrations`.
+4. Deploy.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`/dashboard` está protegido con `proxy.ts`, que valida la sesión de Supabase antes de renderizar la ruta.
+
+El build no depende de `next/font/google`, así que puede ejecutarse en entornos sin salida a Google Fonts.
